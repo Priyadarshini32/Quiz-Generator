@@ -29,6 +29,7 @@ import pickle
 import time
 import spacy
 import os
+import gdown
 
 import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -451,6 +452,19 @@ def get_mca_questions(context, num_questions):
     if not output_list:
         print("No questions could be generated from the provided context.")
     return output_list[:num_questions]  # Ensure only the requested number of questions are returned
+
+def download_if_not_exists(filename, file_id):
+    if not os.path.exists(filename):
+        url = f"https://drive.google.com/uc?id={file_id}"
+        print(f"Downloading {filename} from Google Drive...")
+        gdown.download(url, filename, quiet=False)
+    else:
+        print(f"{filename} already exists.")
+
+# Example usage:
+download_if_not_exists('t5_question_model.pkl', 'YOUR_T5_QUESTION_MODEL_FILE_ID')
+download_if_not_exists('t5_summary_model.pkl', 'YOUR_T5_SUMMARY_MODEL_FILE_ID')
+download_if_not_exists('sentence_transformer_model.pkl', 'YOUR_SENTENCE_TRANSFORMER_MODEL_FILE_ID')
 
 
 

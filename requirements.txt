@@ -1,0 +1,12 @@
+torch
+transformers
+sense2vec
+sentence-transformers
+textwrap3
+nltk
+pke
+flashtext
+scikit-learn
+strsimpy
+spacy
+gdown 
