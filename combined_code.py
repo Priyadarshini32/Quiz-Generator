@@ -89,7 +89,7 @@ print("Summary tokenizer loaded successfully.")
 
 
 #Getting question model and tokenizer
-download_if_not_exists('t5_question_model.pkl', 'YOUR_T5_QUESTION_MODEL_FILE_ID')
+download_if_not_exists('t5_question_model.pkl', 'https://drive.google.com/file/d/1DvtdMdzHRRzv0TWpp26hg4vtCYdBnoP7/view?usp=sharing')
 if os.path.exists("t5_question_model.pkl"):
     with open('t5_question_model.pkl', 'rb') as f:
         question_model = pickle.load(f)
@@ -114,7 +114,7 @@ question_model = question_model.to(device)
 
 #Getting the sentence transformer model and its tokenizer
 # paraphrase-distilroberta-base-v1
-download_if_not_exists('sentence_transformer_model.pkl', 'YOUR_SENTENCE_TRANSFORMER_MODEL_FILE_ID')
+download_if_not_exists('sentence_transformer_model.pkl', 'https://drive.google.com/file/d/13R2f3a_3RxTzjl4hsvhNTTc82ZKnfa3L/view?usp=sharing')
 if os.path.exists("sentence_transformer_model.pkl"):
     with open("sentence_transformer_model.pkl",'rb') as f:
         sentence_transformer_model = pickle.load(f)
