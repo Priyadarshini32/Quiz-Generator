@@ -89,6 +89,7 @@ print("Summary tokenizer loaded successfully.")
 
 
 #Getting question model and tokenizer
+download_if_not_exists('t5_question_model.pkl', 'YOUR_T5_QUESTION_MODEL_FILE_ID')
 if os.path.exists("t5_question_model.pkl"):
     with open('t5_question_model.pkl', 'rb') as f:
         question_model = pickle.load(f)
@@ -98,12 +99,9 @@ else:
     start_time= time.time()
     question_model = T5ForConditionalGeneration.from_pretrained('ramsrigouthamg/t5_squad_v1')
     end_time = time.time()
-
     print("downloaded the question model in ",(end_time-start_time)/60," min , now saving it to disc...")
-
     with open("t5_question_model.pkl", 'wb') as f:
         pickle.dump(question_model,f)
-
     print("Done. Saved the model to disc.")
 
 print("Loading question tokenizer from HuggingFace hub...")
@@ -116,6 +114,7 @@ question_model = question_model.to(device)
 
 #Getting the sentence transformer model and its tokenizer
 # paraphrase-distilroberta-base-v1
+download_if_not_exists('sentence_transformer_model.pkl', 'YOUR_SENTENCE_TRANSFORMER_MODEL_FILE_ID')
 if os.path.exists("sentence_transformer_model.pkl"):
     with open("sentence_transformer_model.pkl",'rb') as f:
         sentence_transformer_model = pickle.load(f)
@@ -461,10 +460,10 @@ def download_if_not_exists(filename, file_id):
     else:
         print(f"{filename} already exists.")
 
-# Example usage:
-download_if_not_exists('t5_question_model.pkl', 'YOUR_T5_QUESTION_MODEL_FILE_ID')
-download_if_not_exists('t5_summary_model.pkl', 'YOUR_T5_SUMMARY_MODEL_FILE_ID')
-download_if_not_exists('sentence_transformer_model.pkl', 'YOUR_SENTENCE_TRANSFORMER_MODEL_FILE_ID')
+# Replace the FILE_IDs below with your actual IDs from Google Drive
+download_if_not_exists('t5_question_model.pkl', 'https://drive.google.com/file/d/1DvtdMdzHRRzv0TWpp26hg4vtCYdBnoP7/view?usp=sharing')
+download_if_not_exists('t5_summary_model.pkl', 'https://drive.google.com/file/d/1xXlW0qrZ1-P5YDjW4R_SQ2JRDrRGk9Qu/view?usp=sharing')
+download_if_not_exists('sentence_transformer_model.pkl', 'https://drive.google.com/file/d/13R2f3a_3RxTzjl4hsvhNTTc82ZKnfa3L/view?usp=sharing')
 
 
 
