@@ -1,20 +1,16 @@
-#import all the neccessary libraries
+# --- Imports ---
 import warnings
 warnings.filterwarnings("ignore")
 import torch
-from transformers import T5ForConditionalGeneration,T5Tokenizer
+from transformers import T5ForConditionalGeneration, T5Tokenizer
 from sense2vec import Sense2Vec
 from sentence_transformers import SentenceTransformer
 from textwrap3 import wrap
 import random
 import numpy as np
 import nltk
-#nltk.download('punkt')
-#nltk.download('brown')
-#nltk.download('wordnet')
 from nltk.corpus import wordnet as wn
 from nltk.tokenize import sent_tokenize
-#nltk.download('stopwords')
 from nltk.corpus import stopwords
 import string
 import pke
@@ -22,14 +18,36 @@ import traceback
 from flashtext import KeywordProcessor
 from collections import OrderedDict
 from sklearn.metrics.pairwise import cosine_similarity
-#nltk.download('omw-1.4')
 from strsimpy.normalized_levenshtein import NormalizedLevenshtein
-#from similarity.normalized_levenshtein import NormalizedLevenshtein
 import pickle
 import time
 import spacy
 import os
 import gdown
+
+# --- Define download_if_not_exists function here ---
+def download_if_not_exists(filename, file_id):
+    if not os.path.exists(filename):
+        # If file_id is a full URL, extract the ID
+        if file_id.startswith("http"):
+            import re
+            match = re.search(r'/d/([a-zA-Z0-9_-]+)', file_id)
+            if match:
+                file_id = match.group(1)
+        url = f"https://drive.google.com/uc?id={file_id}"
+        print(f"Downloading {filename} from Google Drive...")
+        gdown.download(url, filename, quiet=False)
+    else:
+        print(f"{filename} already exists.")
+
+# --- Now call the function for each model file ---
+download_if_not_exists('t5_question_model.pkl', 'https://drive.google.com/file/d/1DvtdMdzHRRzv0TWpp26hg4vtCYdBnoP7/view?usp=sharing')
+download_if_not_exists('t5_summary_model.pkl', 'https://drive.google.com/file/d/1xXlW0qrZ1-P5YDjW4R_SQ2JRDrRGk9Qu/view?usp=sharing')
+download_if_not_exists('sentence_transformer_model.pkl', 'https://drive.google.com/file/d/13R2f3a_3RxTzjl4hsvhNTTc82ZKnfa3L/view?usp=sharing')
+
+# --- The rest of your code goes here ---
+# (e.g., model_path, loading models, etc.)
+
 
 import torch
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -451,19 +469,6 @@ def get_mca_questions(context, num_questions):
     if not output_list:
         print("No questions could be generated from the provided context.")
     return output_list[:num_questions]  # Ensure only the requested number of questions are returned
-
-def download_if_not_exists(filename, file_id):
-    if not os.path.exists(filename):
-        url = f"https://drive.google.com/uc?id={file_id}"
-        print(f"Downloading {filename} from Google Drive...")
-        gdown.download(url, filename, quiet=False)
-    else:
-        print(f"{filename} already exists.")
-
-# Replace the FILE_IDs below with your actual IDs from Google Drive
-download_if_not_exists('t5_question_model.pkl', 'https://drive.google.com/file/d/1DvtdMdzHRRzv0TWpp26hg4vtCYdBnoP7/view?usp=sharing')
-download_if_not_exists('t5_summary_model.pkl', 'https://drive.google.com/file/d/1xXlW0qrZ1-P5YDjW4R_SQ2JRDrRGk9Qu/view?usp=sharing')
-download_if_not_exists('sentence_transformer_model.pkl', 'https://drive.google.com/file/d/13R2f3a_3RxTzjl4hsvhNTTc82ZKnfa3L/view?usp=sharing')
 
 
 

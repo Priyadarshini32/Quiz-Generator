@@ -34,23 +34,25 @@ def login():
             return render_template('login.html', error="Invalid credentials. Please try again.")
     return render_template('login.html')
 
-# Route for the signup page
-@app.route('/signup', methods=['GET', 'POST'])
-def signup():
+# Route for the register page
+@app.route('/register', methods=['GET', 'POST'])
+def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        confirm_password = request.form['confirm_password']
+        if password != confirm_password:
+            return render_template('register.html', error="Passwords do not match.")
         existing_user = User.query.filter_by(username=username).first()
-    
         if existing_user:
-            return render_template('signup.html', error="Username already exists. Please choose a different one.")
+            return render_template('register.html', error="Username already exists. Please choose a different one.")
         else:
             new_user = User(username=username, password=password)
             db.session.add(new_user)
             db.session.commit()
             # After registration, redirect to login page
             return redirect(url_for('login'))
-    return render_template('signup.html')
+    return render_template('register.html')
 
 # Route for the dashboard page
 @app.route('/dashboard')
