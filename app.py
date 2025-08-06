@@ -45,7 +45,7 @@ def register():
             return render_template('register.html', error="Passwords do not match.")
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
-            return render_template('register.html', error="Username already exists. Please choose a different one.")
+            return render_template('register.html', error="user already exist")
         else:
             new_user = User(username=username, password=password)
             db.session.add(new_user)
