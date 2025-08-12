@@ -13,7 +13,7 @@ from nltk.corpus import wordnet as wn
 from nltk.tokenize import sent_tokenize
 from nltk.corpus import stopwords
 import string
-import pke
+
 import traceback
 from flashtext import KeywordProcessor
 from collections import OrderedDict
@@ -195,55 +195,21 @@ def summarizer(text,model,tokenizer):
 
   return summary
 
-def get_nouns_multipartite(content):
-    """
-    This function takes the content text given and then outputs the phrases which are build around the nouns , so that we can use them for context based distractors
-    """
-    out=[]
-    try:
-        nlp=spacy.load("en_core_web_sm")
-        extractor = pke.unsupervised.MultipartiteRank()
-        extractor.load_document(input=content,language='en')
-        #    not contain punctuation marks or stopwords as candidates.
-        #pos = {'PROPN','NOUN',}
-        pos = {'PROPN', 'NOUN', 'ADJ', 'VERB', 'ADP', 'ADV', 'DET', 'CONJ', 'NUM', 'PRON', 'X'}
 
-        #pos = {'PROPN','NOUN'}
-        stoplist = list(string.punctuation)
-        stoplist += ['-lrb-', '-rrb-', '-lcb-', '-rcb-', '-lsb-', '-rsb-']
-        stoplist += stopwords.words('english')
-        # extractor.candidate_selection(pos=pos, stoplist=stoplist)
-        extractor.candidate_selection( pos=pos)
-        # 4. build the Multipartite graph and rank candidates using random walk,
-        #    alpha controls the weight adjustment mechanism, see TopicRank for
-        #    threshold/method parameters.
-        extractor.candidate_weighting(alpha=1.1,
-                                      threshold=0.75,
-                                      method='average')
-        keyphrases = extractor.get_n_best(n=15)
-
-
-        for val in keyphrases:
-            out.append(val[0])
-    except:
-        out = []
-        #traceback.print_exc()
-
-    return out
 
 def get_keywords(originaltext):
     """
-    Try to extract keywords using get_nouns_multipartite (pke).
-    If that fails, use a simple NLTK-based fallback with filtering for meaningful keywords.
+    Extract keywords using NLTK (Part-of-Speech tagging) method.
+    
+    Args:
+        originaltext (str): The text to extract keywords from
     """
-    keywords = get_nouns_multipartite(originaltext)
-    if keywords:
-        # Filter out short or non-alphabetic keywords
-        keywords = [kw for kw in keywords if kw.isalpha() and len(kw) > 2]
-        return keywords[:10]  # Limit to top 10
+    print("Starting keyword extraction process...")
+    print("Using NLTK method for keyword extraction...")
+    return _extract_keywords_nltk(originaltext)
 
-    # Fallback: Use NLTK to extract nouns as keywords
-    print("pke keyword extraction failed, using NLTK fallback.")
+def _extract_keywords_nltk(originaltext):
+    """Helper function to extract keywords using NLTK method."""
     try:
         import nltk
         from nltk.corpus import stopwords
@@ -263,9 +229,12 @@ def get_keywords(originaltext):
         keywords = [word for word, pos in tagged if pos in ('NN', 'NNS', 'NNP', 'NNPS')]
         # Remove duplicates, capitalize, and limit to top 10
         filtered_keywords = list(dict.fromkeys([w.capitalize() for w in keywords if w.isalpha() and len(w) > 2]))[:10]
+        print(f"NLTK method SUCCESSFUL! Extracted {len(filtered_keywords)} keywords: {filtered_keywords}")
+        print("Method used: NLTK (Part-of-Speech tagging)")
         return filtered_keywords
     except Exception as e:
-        print("NLTK fallback keyword extraction failed:", e)
+        print(f"NLTK keyword extraction failed: {e}")
+        print("Method used: NONE (NLTK method failed)")
         return []
 
 def get_question(context,answer,model,tokenizer):
@@ -431,11 +400,22 @@ def get_mca_questions(context, num_questions):
     This function generates multiple-choice questions based on a given context.
     It summarizes the context, extracts important keywords, generates questions related to those keywords,
     and provides randomized answer choices, including the correct answer, for each question.
+    
+    Args:
+        context (str): The input text to generate questions from
+        num_questions (int): Number of questions to generate
     """
+    print("Starting MCQ generation process...")
+    print("=" * 60)
+    print("Keyword extraction method: NLTK (Part-of-Speech tagging)")
+    print("=" * 60)
+    
     summarized_text = summarizer(context, summary_model, summary_tokenizer)
 
     imp_keywords = get_keywords(context)
-    print(f"Extracted keywords: {imp_keywords}")
+    print(f"Final extracted keywords: {imp_keywords}")
+    print("=" * 60)
+    
     output_list = []
     attempted = set()
     # Loop until the desired number of questions is reached or all keywords are exhausted
@@ -468,6 +448,12 @@ def get_mca_questions(context, num_questions):
                 break
     if not output_list:
         print("No questions could be generated from the provided context.")
+    
+    print("=" * 60)
+    print(f"MCQ generation completed! Generated {len(output_list)} questions.")
+    print("Summary: The keyword extraction method used will be shown in the logs above.")
+    print("=" * 60)
+    
     return output_list[:num_questions]  # Ensure only the requested number of questions are returned
 
 

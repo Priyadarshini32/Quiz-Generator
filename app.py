@@ -70,6 +70,7 @@ def upload():
         return 'No file selected'
 
     num_questions = int(request.form['num_questions'])
+    
     if file:
         pdf_text = read_pdf(file)
         mcq_questions = process_text(pdf_text, num_questions)
